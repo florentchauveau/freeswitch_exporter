@@ -1,4 +1,5 @@
 # FreeSWITCH Exporter for Prometheus
+![CI](https://github.com/florentchauveau/freeswitch_exporter/actions/workflows/build.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/florentchauveau/freeswitch_exporter)](https://goreportcard.com/report/github.com/florentchauveau/freeswitch_exporter)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/florentchauveau/freeswitch_exporter/blob/master/LICENSE)
 
@@ -30,7 +31,7 @@ Help on flags:
 
 Flags:
       --help                   Show context-sensitive help (also try --help-long and --help-man).
-  -l, --web.listen-address=":9636"  
+  -l, --web.listen-address=":9282"  
                                Address to listen on for web interface and telemetry.
       --web.telemetry-path="/metrics"  
                                Path under which to expose metrics.

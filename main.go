@@ -11,7 +11,7 @@ import (
 
 func main() {
 	var (
-		listenAddress = kingpin.Flag("web.listen-address", "Address to listen on for web interface and telemetry.").Short('l').Default(":9636").String()
+		listenAddress = kingpin.Flag("web.listen-address", "Address to listen on for web interface and telemetry.").Short('l').Default(":9282").String()
 		metricsPath   = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").String()
 		scrapeURI     = kingpin.Flag("freeswitch.scrape-uri", `URI on which to scrape freeswitch. E.g. "tcp://localhost:8021"`).Short('u').Default("tcp://localhost:8021").String()
 		timeout       = kingpin.Flag("freeswitch.timeout", "Timeout for trying to get stats from freeswitch.").Short('t').Default("5s").Duration()

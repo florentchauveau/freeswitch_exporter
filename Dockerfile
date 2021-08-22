@@ -13,6 +13,6 @@ COPY --from=builder /go/src/freeswitch_exporter /freeswitch_exporter
 
 LABEL author="Florent CHAUVEAU <florent.chauveau@gmail.com>"
 
-EXPOSE 9636
+EXPOSE 9282
 
 ENTRYPOINT [ "/freeswitch_exporter" ]
