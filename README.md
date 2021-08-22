@@ -1,4 +1,6 @@
 # FreeSWITCH Exporter for Prometheus
+[![Go Report Card](https://goreportcard.com/badge/github.com/florentchauveau/freeswitch_exporter)](https://goreportcard.com/report/github.com/florentchauveau/freeswitch_exporter)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/florentchauveau/freeswitch_exporter/blob/master/LICENSE)
 
 A [FreeSWITCH](https://freeswitch.org/confluence/display/FREESWITCH/FreeSWITCH+Explained) exporter for Prometheus.
 
@@ -46,12 +48,10 @@ Also, you need to make sure that the exporter will be allowed by the ACL (if any
 
 The exporter will try to fetch values from the following commands:
 
-- Calls count: `api show calls count`
-- Uptime: `api uptime s`
-- Time synced with system: `api strepoch`
-- Status: `status`
-
-```
+- `api show calls count`: Calls count
+- `api uptime s`: Uptime
+- `api strepoch`: Time synced with system
+- `status`
 
 List of exposed metrics:
 
