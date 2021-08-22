@@ -8,11 +8,20 @@ It communicates with FreeSWITCH using [mod_event_socket](https://freeswitch.org/
 
 ## Getting Started
 
-Pre-built binaries are available in [releases](https://github.com/florentchauveau/freeswitch_exporter/releases).
+Pre-built static binaries are available in [releases](https://github.com/florentchauveau/freeswitch_exporter/releases).
+
+Docker images are also available on [DockerHub](https://hub.docker.com/r/florentchauveau/freeswitch_exporter).
+
+
 
 To run it:
 ```bash
 ./freeswitch_exporter [flags]
+```
+
+Docker run:
+```bash
+docker run --rm -it florentchauveau/freeswitch_exporter:latest --help
 ```
 
 Help on flags:
