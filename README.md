@@ -104,7 +104,7 @@ List of exposed metrics:
 
 ## Compiling
 
-With go1.17+, clone the project and:
+With go1.18+, clone the project and:
 
 ```bash
 go build
