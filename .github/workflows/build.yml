@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   binaries:
     name: Cross-platform binary builds
@@ -11,57 +14,69 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: ">=1.18"
+          go-version: "1.24"
+          check-latest: true
 
-      - name: Create directory
-        run: mkdir dist
-
-      - name: Build linux/amd64
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/freeswitch_exporter-linux-amd64
-
-      - name: Build linux/arm64
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o dist/freeswitch_exporter-linux-arm64
+      - name: Build binaries
+        run: |
+          mkdir -p dist
+          LDFLAGS="-s -w \
+            -X github.com/prometheus/common/version.Version=${GITHUB_REF_NAME} \
+            -X github.com/prometheus/common/version.Revision=${GITHUB_SHA} \
+            -X github.com/prometheus/common/version.Branch=${GITHUB_REF_NAME} \
+            -X github.com/prometheus/common/version.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          for target in linux/amd64 linux/arm64; do
+            os="${target%/*}"; arch="${target#*/}"
+            echo "Building ${os}/${arch}"
+            CGO_ENABLED=0 GOOS="${os}" GOARCH="${arch}" \
+              go build -ldflags "${LDFLAGS}" -o "dist/freeswitch_exporter-${os}-${arch}"
+          done
 
       - name: Upload build artifacts
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          args: ./dist/*
+          files: dist/*
 
   docker:
     name: Cross-platform Docker images
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           tags: type=semver,pattern={{version}}
           images: florentchauveau/freeswitch_exporter
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ github.ref_name }}
+            REVISION=${{ github.sha }}
+            BRANCH=${{ github.ref_name }}
