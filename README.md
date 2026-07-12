@@ -30,17 +30,42 @@ Help on flags:
 ./freeswitch_exporter --help
 
 Flags:
-      --help                   Show context-sensitive help (also try --help-long and --help-man).
-  -l, --web.listen-address=":9282"  
-                               Address to listen on for web interface and telemetry.
-      --web.telemetry-path="/metrics"  
-                               Path under which to expose metrics.
-  -u, --freeswitch.scrape-uri="tcp://localhost:8021"  
-                               URI on which to scrape freeswitch. E.g. "tcp://localhost:8021"
-  -t, --freeswitch.timeout=5s  Timeout for trying to get stats from freeswitch.
-  -P, --freeswitch.password="ClueCon"  
-                               Password for freeswitch event socket.
+  -h, --[no-]help                Show context-sensitive help (also try
+                                 --help-long and --help-man).
+      --web.telemetry-path="/metrics"
+                                 Path under which to expose metrics.
+  -u, --freeswitch.scrape-uri="tcp://localhost:8021"
+                                 URI on which to scrape freeswitch. E.g.
+                                 "tcp://localhost:8021"
+  -t, --freeswitch.timeout=5s    Timeout for trying to get stats from freeswitch.
+  -P, --freeswitch.password="ClueCon"
+                                 Password for freeswitch event socket. Can also
+                                 be set via the FREESWITCH_PASSWORD environment
+                                 variable. ($FREESWITCH_PASSWORD)
+      --log.level=info           Only log messages with the given severity or
+                                 above. One of: [debug, info, warn, error]
+      --log.format=logfmt        Output format of log messages. One of: [logfmt,
+                                 json]
+      --web.listen-address=:9282 ...
+                                 Addresses on which to expose metrics and web
+                                 interface. Repeatable for multiple addresses.
+      --web.config.file=""       Path to configuration file that can enable TLS
+                                 or authentication.
+      --[no-]version             Show application version.
 ```
+
+> **Note:** the password can be supplied via the `FREESWITCH_PASSWORD`
+> environment variable instead of `--freeswitch.password`, so it does not appear
+> in the process list.
+
+## TLS and basic authentication
+
+The exporter uses the Prometheus [exporter-toolkit](https://github.com/prometheus/exporter-toolkit),
+so TLS and HTTP basic authentication can be enabled with `--web.config.file`.
+See the [web configuration reference](https://github.com/prometheus/exporter-toolkit/blob/master/docs/web-configuration.md)
+for the file format.
+
+A landing page is served at `/` with a link to the metrics endpoint.
 
 ## Usage
 
@@ -82,6 +107,8 @@ List of exposed metrics:
 # TYPE freeswitch_current_sps_peak gauge
 # HELP freeswitch_current_sps_peak_last_5min Peak sessions per second for the last 5 minutes
 # TYPE freeswitch_current_sps_peak_last_5min gauge
+# HELP freeswitch_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, goversion, goos and goarch.
+# TYPE freeswitch_exporter_build_info gauge
 # HELP freeswitch_exporter_failed_scrapes Number of failed freeswitch scrapes.
 # TYPE freeswitch_exporter_failed_scrapes counter
 # HELP freeswitch_exporter_total_scrapes Current total freeswitch scrapes.
@@ -104,13 +131,20 @@ List of exposed metrics:
 
 ## Compiling
 
-With go1.18+, clone the project and:
+With go1.24+, clone the project and:
 
 ```bash
 go build
 ```
 
 Dependencies will be fetched automatically.
+
+To run the test suite and linter:
+
+```bash
+go test ./... -race -cover
+golangci-lint run ./...
+```
 
 ## Contributing
 
